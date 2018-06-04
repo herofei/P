@@ -4,7 +4,29 @@
  * describe : Promise实现;
  */
 'use strict';
-(function(win) {
+
+(function (definition) {
+    // CommonJS
+    if (typeof exports === 'object' && typeof module === 'object') {
+        module.exports = definition();
+
+    // RequireJS
+    } else if (typeof define === 'function' && define.amd) {
+        define(definition);
+
+    } else if (typeof window !== 'undefined' || typeof self !== 'undefined') {
+        var global = typeof window !== 'undefined' ? window : self;
+        var previousP = global.P;
+        global.P = definition();
+        global.P.noConflict = function () {
+            global.P = previousP;
+            return this;
+        };
+
+    } else {
+        throw new Error('This environment was not anticipated by p.');
+    }
+})(function() {
     var PENDING = 0,
         FULFILLED = 1,
         REJECTED = 2;
@@ -30,13 +52,37 @@
         this.onRejectedCallbacks = [];
 
         function resolve (value) {
+            if (me.status !== PENDING) {
+                return;
+            }
+
             if (value instanceof Promise) {
                 return value.then(resolve, reject);
             }
 
             setTimeout (function () {
                 // 异步执行所有回调
-            })
+                me.status = FULFILLED;
+                me.value = value;
+                me.onFulfilledCallbacks.forEach(function (item) {
+                    item(value);
+                });
+            });
+        }
+
+        function reject (reason) {
+            if (me.status !== PENDING) {
+                return;
+            }
+            
+            setTimeout (function () {
+                // 异步执行所有回调
+                me.status = REJECTED;
+                me.value = reason;
+                me.onRejectedCallbacks.forEach(function (item) {
+                    item(value);
+                });
+            });
         }
 
         try {
@@ -61,6 +107,4 @@
     Promise.race = function () {
 
     }
-
-    win.P = Promise;
-})(window);
+})
