@@ -19,14 +19,15 @@
         })
     })();
 
-    function Promise (executor) {
-        if (!util.isFunction(executor)) {
+    function Promise (resolver) {
+        if (!util.isFunction(resolver)) {
             throw new TypeError('The arguments must be a function!');
         }
         var me = this;
         this.value = void 0;
         this.state = PENDING;
-        this.callbacks = [];
+        this.onFulfilledCallbacks = [];
+        this.onRejectedCallbacks = [];
 
         function resolve (value) {
             if (value instanceof Promise) {
@@ -36,6 +37,12 @@
             setTimeout (function () {
                 // 异步执行所有回调
             })
+        }
+
+        try {
+            resolver(resolve.bind(this), reject.bind(this));
+        } catch (e) {
+            reject.call(this, e);
         }
     }
 
