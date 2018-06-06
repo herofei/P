@@ -1,5 +1,5 @@
 ## About
-Promise ES5兼容方案
+基于Promise A+ 规范编写的 Promise ES5 兼容方案
 
 ## Getting started
 
@@ -12,7 +12,8 @@ P.prototype.then(onFulfilled, onRejected)
 
 
 // 添加一个拒绝(rejection) 回调到当前 promise, 返回一个新的promise
-// 当这个回调函数被调用，新 promise 将以它的返回值来resolve，否则如果当前promise 进入fulfilled状态，则以当前promise的完成结果作为新promise的完成结果
+// 当这个回调函数被调用，新 promise 将以它的返回值来resolve
+// 否则如果当前promise 进入fulfilled状态，则以当前promise的完成结果作为新promise的完成结果
 P.prototype.catch(onRejected)
 
 
