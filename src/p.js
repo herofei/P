@@ -37,7 +37,7 @@
     var PENDING = 0,
         FULFILLED = 1,
         REJECTED = 2,
-        NOOP = {};
+        NOOP = {},
     utils = {},
         typeArr = ['Function', 'Object', 'Array'];
 
