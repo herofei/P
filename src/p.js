@@ -34,19 +34,19 @@
         throw new Error('This environment was not anticipated by p.');
     }
 })(function () {
-    var PENDING = 0,
-        FULFILLED = 1,
-        REJECTED = 2,
+    var PENDING = 'pending',
+        FULFILLED = 'fulfilled',
+        REJECTED = 'rejected',
         NOOP = {},
-    utils = {},
+        utils = {},
         typeArr = ['Function', 'Object', 'Array'];
 
     (function () {
         typeArr.foreach(function (item) {
             utils['is' + item] = function (type) {
                 return Object.prototype.toString.call(type) === '[object ' + item + ']';
-            }
-        })
+            };
+        });
     })();
 
     function resolve(value) {
@@ -109,10 +109,10 @@
 
         onFulfilled = utils.isFunction(onFulfilled) ? onFulfilled : function (value) {
             return value;
-        }
+        };
         onRejected = utils.isFunction(onRejected) ? onRejected : function (reason) {
             throw reason;
-        }
+        };
 
         if (me.status === PENDING) {
             return promise = new Promise(function (resolve, reject) {
@@ -123,7 +123,7 @@
                     } catch (reason) {
                         reject(reason);
                     }
-                })
+                });
 
                 me.onRejectedCallbacks.push(function (reason) {
                     try {
@@ -132,8 +132,8 @@
                     } catch (reason) {
                         reject(reason);
                     }
-                })
-            })
+                });
+            });
         }
 
         if (me.status === FULFILLED) {
@@ -145,7 +145,7 @@
         }
 
         return createPromise(resolver, me.value);
-    }
+    };
 
     function createPromise(resolver, value) {
         var promise;
@@ -158,7 +158,7 @@
                     reject(reason);
                 }
             });
-        })
+        });
     }
 
     function resolvePromise(promise, value, resolve, reject) {
@@ -172,7 +172,7 @@
         if (value instanceof Promise) {
             if (value.status === PENDING) {
                 return value.then(function (v) {
-                    resolvePromise(promise, v, resolve, reject)
+                    resolvePromise(promise, v, resolve, reject);
                 }, reject);
             }
             return value.then(resolve, reject);
@@ -198,7 +198,7 @@
                         return reject(r);
                     });
                 } else {
-                    resolve(x)
+                    resolve(value);
                 }
             } catch (error) {
                 // 此三处只可执行一次，以谁先为准
@@ -215,7 +215,7 @@
 
     Promise.prototype.catch = function (onRejected) {
         return this.then(null, onRejected);
-    }
+    };
 
     Promise.resolve = function (value) {
         if (value instanceof this) {
@@ -223,12 +223,12 @@
         }
         var promise = new this(NOOP);
         return resolve(promise, value);
-    }
+    };
 
     Promise.reject = function (reason) {
         var promise = new this(NOOP);
         return reject(promise, reason);
-    }
+    };
 
     Promise.all = function (array) {
         var me = this;
@@ -270,7 +270,7 @@
         }
 
         return promise;
-    }
+    };
 
     Promise.race = function (array) {
         var me = this;
@@ -307,7 +307,7 @@
         }
 
         return promise;
-    }
+    };
 
     return Promise;
-})
+});
